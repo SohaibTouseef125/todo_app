@@ -12,10 +12,16 @@ const app: Application = express()
 //Middlewares
 app.use(helmet())
 app.use(cookieParser())
+const ALLOWED_ORIGINS = process.env.CORS_ORIGINS
+    ? process.env.CORS_ORIGINS.split(',')
+    : ['*']
+
 app.use(
     cors({
         methods: ['GET', 'POST', 'DELETE', 'OPTIONS', 'HEAD', 'PUT', 'PATCH'],
-        origin: ['http://localhost:5173', 'http://localhost:4173'],
+        origin: ALLOWED_ORIGINS.includes('*')
+            ? (origin, callback) => callback(null, origin || '*')
+            : ALLOWED_ORIGINS,
         credentials: true
     })
 )
